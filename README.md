@@ -1,4 +1,4 @@
-ntzyz-bot
+kasora-tgbot
 =========
 
-My Great Bot
+My stupid Bot
