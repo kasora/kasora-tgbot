@@ -143,7 +143,10 @@ class Controller extends TelegramBaseController {
     return {
       echoHandler: 'echo',
       bashHandler: 'bash',
-      idHandler: 'id'
+      idHandler: 'id',
+      listremindHandler: 'listremind',
+      openremindHandler: 'openremind',
+      closeremindHandler: 'closeremind'
     };
   }
 }
@@ -153,6 +156,9 @@ let controller = new Controller();
 tg.router
   .when(new TextCommand('/echo', 'echoHandler'), controller)
   .when(new TextCommand('/bash', 'bashHandler'), controller)
+  .when(new TextCommand('/listremind', 'listremindHandler'), controller)
+  .when(new TextCommand('/openremind', 'openremindHandler'), controller)
+  .when(new TextCommand('/closeremind', 'closeremindHandler'), controller)
   .when(new TextCommand('/id', 'idHandler'), controller);
 
 
