@@ -1,9 +1,9 @@
-#!/usr/bin/expect
-spawn scp ./config.js kasora.moe:~/code/kasora-bot/
-expect 'config'
-spawn scp ./index.js kasora.moe:~/code/kasora-bot/
-expect 'index'
-spawn ssh kasora.moe
-send "pm2 restart telegram\r"
-send "pm2 log telegram\r"
-interact
+#!/bin/bash
+tar -czvf tgbot.tar.gz $(find . ! -type d -not \( -path "./node_modules/*" -o -path "./.git/*" \))
+scp ./tgbot.tar.gz kasora.moe:~/prototype/
+ssh kasora.moe 2>&1 << eeooff
+cd ~/prototype
+tar -xzvf tgbot.tar.gz
+./start.sh
+exit
+eeooff
