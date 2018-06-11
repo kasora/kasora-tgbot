@@ -1,13 +1,12 @@
 'use strict'
 
-const express = require('express');
 const Telegram = require('telegram-node-bot');
 const superAgent = require('superagent');
 const { exec } = require('child_process');
 const vm = require('vm2').VM;
 
-const agent = superAgent.agent();
 let config = require('./config');
+let utils = require('./utils');
 const TelegramBaseController = Telegram.TelegramBaseController;
 const TextCommand = Telegram.TextCommand;
 const tg = new Telegram.Telegram(config.telegramToken, { webAdmin: config.webAdmin });
@@ -16,52 +15,41 @@ class Controller extends TelegramBaseController {
   constructor() {
     super();
   }
+
   echo($) {
-    let text = $.message.text.split(' ');
-    text.shift();
+    let text = utils.getCommand($);
 
     $.sendMessage(text.join(' '));
   }
 
   bash($) {
-    if ($.userId !== config.userId) {
-      $.sendMessage('🌚');
-      return;
-    }
+    utils.verify($);
 
-    let msg = $.message.text;
-    let code = msg.split(' ');
-    code.shift();
-
-
-    let command = code.join(' ');
+    let command = utils.getCommand($);
 
     exec(command, (err, stdout, stderr) => {
-      if (err) {
-        $.sendMessage('```\n' + err + '```\n', { parse_mode: 'Markdown' });
-      }
-      else {
-        $.sendMessage('```\n' + stdout + '```\n', { parse_mode: 'Markdown' });
-      }
+      if (err) utils.sendMarkdown($, stderr);
+      else utils.sendMarkdown($, stdout);
     });
   }
 
   id($) {
-    $.sendMessage(`User ID: ${$.userId}\nChat ID: ${$.chatId}`);
+    utils.sendMarkdown(`User ID: ${$.userId}\nChat ID: ${$.chatId}`);
   }
 
   node($) {
-    let code = $.message.text.split(' ');
-    code.shift();
-
-    let command = code.join(' ');
+    let command = utils.getCommand($)
     try {
-      let result = new vm().run(command);
+      let result = new vm({ timeout: 1000 }).run(command);
       $.sendMessage('```\n' + result + '```\n', { parse_mode: 'Markdown' });
     }
     catch (err) {
       $.sendMessage('```\n' + err + '```\n', { parse_mode: 'Markdown' });
     }
+  }
+
+  setAlarm($) {
+
   }
 
   get routes() {
