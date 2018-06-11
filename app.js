@@ -3,9 +3,10 @@
 const express = require('express');
 const Telegram = require('telegram-node-bot');
 const superAgent = require('superagent');
-const agent = superAgent.agent();
 const { exec } = require('child_process');
+const vm = require('vm');
 
+const agent = superAgent.agent();
 let config = require('./config');
 const TelegramBaseController = Telegram.TelegramBaseController;
 const TextCommand = Telegram.TextCommand;
@@ -31,7 +32,7 @@ class Controller extends TelegramBaseController {
     let msg = $.message.text;
     let code = msg.split(' ');
     code.shift();
-    
+
 
     let command = code.join(' ');
 
@@ -54,14 +55,10 @@ class Controller extends TelegramBaseController {
     code.shift();
 
     let command = code.join(' ');
-    exec(`node -e "console.log(${command})"`, (err, stdout, stderr) => {
-      if (err) {
-        $.sendMessage('```\n' + stderr + '```\n', { parse_mode: 'Markdown' });
-      }
-      else {
-        $.sendMessage('```\n' + stdout + '```\n', { parse_mode: 'Markdown' });
-      }
-    });
+    const script = new vm.Script(command);
+    const context = new vm.createContext();
+    let result = script.runInContext(context);
+    $.sendMessage('```\n' + result + '```\n', { parse_mode: 'Markdown' });
   }
 
   get routes() {
