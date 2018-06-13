@@ -19,15 +19,6 @@ Object.keys(routes).forEach((routeName) => {
     } catch (err) {
       msg.response = `Error: ${err.message}`;
     }
-
-    if (msg.response) {
-      let sentMessage = await bot.sendMessage(msg.chat.id, '```\n' + msg.response + '```\n', {
-        parse_mode: 'Markdown',
-        reply_to_message_id: msg.message_id
-      });
-
-      utils.sentMessages.push(sentMessage);
-      console.log(utils.sentMessages);
-    }
+    await utils.sendMessage(msg);
   })
 })

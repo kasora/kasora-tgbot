@@ -5,4 +5,12 @@ exports = module.exports = {
     port: 12477,
     host: 'localhost'
   },
+
+  mongo:{ // to save bot message
+    host: 'localhost',
+    databaseName: 'tgbot',
+    username: '',
+    password: '',
+    port: '27017',
+  }
 }

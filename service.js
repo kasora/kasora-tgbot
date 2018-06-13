@@ -30,6 +30,6 @@ exports.node = function (msg) {
 }
 
 exports.shutUp = async function (msg) {
-  let lastMessage = utils.sentMessages.pop();
-  msg.bot.deleteMessage(lastMessage.chat.id, lastMessage.message_id)
+  let lastMessage = await getLatestMessages(msg.chat.id);
+  msg.bot.deleteMessage(lastMessage.chat.id, lastMessage.message_id);
 }
