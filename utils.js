@@ -1,22 +1,18 @@
 exports = module.exports = {};
 
-const sendMarkdown = ($, message) => {
-  $.sendMessage('```\n' + message + '```\n', { parse_mode: 'Markdown' });
-}
-exports.sendMarkdown = sendMarkdown;
-
-const getCommand = ($) => {
-  let command = $.message.text.split(' ');
+const getCommand = (text) => {
+  let command = text.split(' ');
   command.shift();
-  
+
   return command.join(' ');
 }
 exports.getCommand = getCommand;
 
-const verify = ($) => {
-  if ($.userId !== config.userId) {
-    $.sendMessage('🌚');
-    return;
+const verify = (msg) => {
+  if (msg.from.id !== config.userId) {
+    throw new Error('🌚');
   }
 }
 exports.verify = verify;
+
+exports.sentMessages = [];

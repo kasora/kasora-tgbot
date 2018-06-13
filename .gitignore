@@ -1,4 +1,4 @@
 /node_modules
-/config/index.js
+config.js
 .vscode
 tgbot.tar.gz

@@ -1,73 +1,33 @@
 'use strict'
 
-const Telegram = require('telegram-node-bot');
-const superAgent = require('superagent');
-const { exec } = require('child_process');
-const vm = require('vm2').VM;
+const TelegramBot = require('node-telegram-bot-api');
 
 let config = require('./config');
 let utils = require('./utils');
-const TelegramBaseController = Telegram.TelegramBaseController;
-const TextCommand = Telegram.TextCommand;
-const tg = new Telegram.Telegram(config.telegramToken, { webAdmin: config.webAdmin });
+let routes = require('./route');
 
-class Controller extends TelegramBaseController {
-  constructor() {
-    super();
-  }
+const bot = new TelegramBot(config.telegramToken, { polling: true });
 
-  echo($) {
-    let text = utils.getCommand($);
-
-    $.sendMessage(text.join(' '));
-  }
-
-  bash($) {
-    utils.verify($);
-
-    let command = utils.getCommand($);
-
-    exec(command, (err, stdout, stderr) => {
-      if (err) utils.sendMarkdown($, stderr);
-      else utils.sendMarkdown($, stdout);
-    });
-  }
-
-  id($) {
-    utils.sendMarkdown(`User ID: ${$.userId}\nChat ID: ${$.chatId}`);
-  }
-
-  node($) {
-    let command = utils.getCommand($)
+Object.keys(routes).forEach((routeName) => {
+  let route = routes[routeName]
+  bot.onText(RegExp(`^\/${routeName}`), async (msg) => {
+    msg.command = utils.getCommand(msg.text);
+    msg.bot = bot;
     try {
-      let result = new vm({ timeout: 1000 }).run(command);
-      $.sendMessage('```\n' + result + '```\n', { parse_mode: 'Markdown' });
+      let output = await route.handler(msg);
+      msg.response = output;
+    } catch (err) {
+      msg.response = `Error: ${err.message}`;
     }
-    catch (err) {
-      $.sendMessage('```\n' + err + '```\n', { parse_mode: 'Markdown' });
+
+    if (msg.response) {
+      let sentMessage = await bot.sendMessage(msg.chat.id, '```\n' + msg.response + '```\n', {
+        parse_mode: 'Markdown',
+        reply_to_message_id: msg.message_id
+      });
+
+      utils.sentMessages.push(sentMessage);
+      console.log(utils.sentMessages);
     }
-  }
-
-  setAlarm($) {
-
-  }
-
-  get routes() {
-    return {
-      echoHandler: 'echo',
-      bashHandler: 'bash',
-      idHandler: 'id',
-      nodeHandler: 'node',
-    };
-  }
-}
-
-let controller = new Controller();
-
-tg.router
-  .when(new TextCommand('/echo', 'echoHandler'), controller)
-  .when(new TextCommand('/bash', 'bashHandler'), controller)
-  .when(new TextCommand('/id', 'idHandler'), controller)
-  .when(new TextCommand('/node', 'nodeHandler'), controller);;
-
-
+  })
+})
