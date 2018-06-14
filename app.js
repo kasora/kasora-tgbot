@@ -27,8 +27,15 @@ Object.keys(routes).forEach((routeName) => {
   })
 })
 
-var CronJob = require('cron').CronJob;
-new CronJob('0 * * * * *', async function () {
+var CronJob1 = require('cron').CronJob;
+new CronJob1('0 * * * * *', async function () {
   await mongo.prepare();
   await alarmUtils.triggerAlarm();
 }, null, true, 'Asia/Shanghai', null, true);
+
+var CronJob2 = require('cron').CronJob;
+new CronJob2('0 0 0 * * *', async function () {
+  await mongo.prepare();
+  await alarmUtils.refreshAlarm();
+  console.log(`${new Date()}\nAll alarm is refreshed.`)
+}, null, true, 'Asia/Shanghai');

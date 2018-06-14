@@ -78,8 +78,8 @@ const setAlarm = async (msg, alarm) => {
   alarm.chat = msg.chat;
 
   let now = new Date();
-  alarm.enable = alarm.alarmTime.hour >= now.getHours()
-    && alarm.alarmTime.minute > now.getMinutes()
+  alarm.enable = alarm.alarmTime.hour > now.getHours()
+    || (alarm.alarmTime.hour === now.getHours() && alarm.alarmTime.minute >= now.getMinutes())
 
   await mongo.alarm.insertOne(alarm);
 }
@@ -123,8 +123,8 @@ const modifyAlarm = async (msg) => {
   }
 
   let now = new Date();
-  let enable = alarmTime.hour >= now.getHours()
-    && alarmTime.minute > now.getMinutes()
+  let enable = alarmTime.hour > now.getHours()
+    || (alarmTime.hour === now.getHours() && alarmTime.minute >= now.getMinutes())
 
   await mongo.alarm.updateOne(
     { _id: _id },
