@@ -1,14 +1,93 @@
-exports = module.exports = {
-  sleep: {
-    message: 'master。已经11点了。现在还不睡觉的话……',
-    time: '11:00'
+exports = module.exports = [
+  {
+    label: 'workday sleep',
+    message: '主人。已经11点了。现在还不睡觉的话……',
+    alarmTime: {
+      hour: 23,
+      minute: 0,
+    },
+    point: 1,
+    check: {
+      time: 'today',
+      mode: 'work'
+    },
   },
-  workStart: {
-    message: '早安。master。\n吃过早餐了么？\n请不要忘了今天的打卡。',
-    time: '9:20'
+  {
+    label: 'workday lunch',
+    message: '主人，再不点午饭的话，12点可就不能准时摸鱼啦！',
+    alarmTime: {
+      hour: 11,
+      minute: 0,
+    },
+    point: 1,
+    check: {
+      time: 'today',
+      mode: 'work'
+    },
   },
-  workEnd: {
-    message: '今天辛苦了呢。master。\n已经到了下班时间了\n不要忘记打卡。',
-    time: '18:30'
+  {
+    label: 'workday work start',
+    message: '早安。主人。\n吃过早餐了么？\n请不要忘了今天的打卡。',
+    alarmTime: {
+      hour: 9,
+      minute: 20,
+    },
+    point: 1,
+    check: {
+      time: 'today',
+      mode: 'work'
+    },
   },
-}
+  {
+    label: 'workday work end',
+    message: '今天也辛苦了呢。主人。\n已经到了下班时间了\n不要忘记打卡。',
+    alarmTime: {
+      hour: 18,
+      minute: 30,
+    },
+    point: 1,
+    check: {
+      time: 'today',
+      mode: 'work'
+    },
+  },
+  {
+    label: 'holiday lunch',
+    message: '主人，就算放假也要记得吃午饭！',
+    alarmTime: {
+      hour: 11,
+      minute: 0,
+    },
+    point: 1,
+    check: {
+      time: 'today',
+      mode: 'holiday'
+    },
+  },
+  {
+    label: 'last holiday sleep',
+    message: '主人。已经11点了。\n明天又要开始上班了……早点睡吧。',
+    alarmTime: {
+      hour: 23,
+      minute: 0,
+    },
+    point: 5,
+    check: {
+      time: 'tomorrow',
+      mode: 'work'
+    },
+  },
+  {
+    label: 'last workday work end',
+    message: '明天就要放假啦，今晚准备玩些什么？',
+    alarmTime: {
+      hour: 18,
+      minute: 30,
+    },
+    point: 5,
+    check: {
+      time: 'tomorrow',
+      mode: 'holiday'
+    },
+  },
+]

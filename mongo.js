@@ -24,6 +24,7 @@ let mongoConnect = async () => {
 
     // 绑定快捷路径
     exports.message = _db.collection('message');
+    exports.alarm = _db.collection('alarm');
 
     return _db;
   } catch (err) {
@@ -50,6 +51,6 @@ exports = module.exports = {
   get client() {
     return _db;
   },
-  tutor: 'loading',
+  
   prepare: prepare,
 };

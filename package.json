@@ -9,6 +9,8 @@
   "author": "kasora <kasorasun@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "cn-holiday": "*",
+    "cron": "^1.3.0",
     "mongodb": "^3.0.10",
     "node-telegram-bot-api": "^0.30.0",
     "vm2": "^3.6.0"
