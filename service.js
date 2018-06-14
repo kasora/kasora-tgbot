@@ -28,7 +28,7 @@ exports.id = function (msg) {
 
 exports.node = function (msg) {
   let result = new vm({ timeout: 1000 }).run(msg.command);
-  return result;
+  return result === undefined ? 'undefined' : result.toString();
 }
 
 exports.shutUp = async function (msg) {
