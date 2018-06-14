@@ -36,7 +36,6 @@ const triggerAlarm = async () => {
   if (alarm) {
 
     let message = '```\n' + `@${alarm.from.username}\n` + alarm.message + '```\n';
-    console.log(message)
     let sentMessage = await bot.sendMessage(alarm.chat.id, message, {
       parse_mode: 'Markdown',
     });

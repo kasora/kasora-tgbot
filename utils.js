@@ -24,7 +24,6 @@ const getLatestMessages = async (chatId) => {
     { $sort: { date: -1 } },
     { $limit: 1 }
   ]).toArray();
-  console.log(latestMessages)
   return latestMessages[0];
 };
 exports.getLatestMessages = getLatestMessages;
