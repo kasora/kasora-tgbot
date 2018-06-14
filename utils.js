@@ -50,7 +50,8 @@ const alarmToString = (alarm) => {
     `id:   ${alarm._id}`,
     `label ${alarm.label}`,
     `time: ${alarm.alarmTime.hour}:${alarm.alarmTime.minute}`,
-    `mode: ${alarm.check.mode}-${alarm.check.time}`
+    `mode: `,
+    ...alarm.check.map(check => `      ${check.mode}-${check.time}`),
   ].join('\n');
 }
 exports.alarmToString = alarmToString;

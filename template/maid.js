@@ -7,10 +7,10 @@ exports = module.exports = [
       minute: 0,
     },
     point: 1,
-    check: {
+    check: [{
       time: 'today',
       mode: 'work'
-    },
+    }],
   },
   {
     label: 'workday lunch',
@@ -20,10 +20,10 @@ exports = module.exports = [
       minute: 0,
     },
     point: 1,
-    check: {
+    check: [{
       time: 'today',
       mode: 'work'
-    },
+    }],
   },
   {
     label: 'workday work start',
@@ -33,10 +33,10 @@ exports = module.exports = [
       minute: 20,
     },
     point: 1,
-    check: {
+    check: [{
       time: 'today',
       mode: 'work'
-    },
+    }],
   },
   {
     label: 'workday work end',
@@ -46,10 +46,10 @@ exports = module.exports = [
       minute: 30,
     },
     point: 1,
-    check: {
+    check: [{
       time: 'today',
       mode: 'work'
-    },
+    }],
   },
   {
     label: 'holiday lunch',
@@ -59,10 +59,10 @@ exports = module.exports = [
       minute: 0,
     },
     point: 1,
-    check: {
+    check: [{
       time: 'today',
       mode: 'holiday'
-    },
+    }],
   },
   {
     label: 'last holiday sleep',
@@ -72,10 +72,16 @@ exports = module.exports = [
       minute: 0,
     },
     point: 5,
-    check: {
-      time: 'tomorrow',
-      mode: 'work'
-    },
+    check: [
+      {
+        time: 'tomorrow',
+        mode: 'work'
+      },
+      {
+        time: 'today',
+        mode: 'holiday'
+      }
+    ],
   },
   {
     label: 'last workday work end',
@@ -85,9 +91,15 @@ exports = module.exports = [
       minute: 30,
     },
     point: 5,
-    check: {
-      time: 'tomorrow',
-      mode: 'holiday'
-    },
+    check: [
+      {
+        time: 'tomorrow',
+        mode: 'holiday'
+      },
+      {
+        time: 'today',
+        mode: 'work'
+      }
+    ],
   },
 ]

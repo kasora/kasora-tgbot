@@ -20,9 +20,13 @@ const getAlarm = async () => {
     }
   ).toArray();
 
-  let alarms = enableAlarms.filter((alarm) =>
-    day[alarm.check.time] === alarm.check.mode
-  )
+  let alarms = enableAlarms.filter((alarm) => {
+    let flag = true;
+    alarm.check.forEach(check => {
+      if(day[check.time] !== check.mode) flag = false;
+    });
+    return flag;
+  })
   alarms.sort((a, b) => b.point - a.point)
   if (alarms.length) {
     return alarms[0];
@@ -33,8 +37,8 @@ exports.getAlarm = getAlarm;
 
 const triggerAlarm = async () => {
   let alarm = await getAlarm();
+  let now = new Date();
   if (alarm) {
-
     let message = '```\n' + `@${alarm.from.username}\n` + alarm.message + '```\n';
     let sentMessage = await bot.sendMessage(alarm.chat.id, message, {
       parse_mode: 'Markdown',
@@ -45,7 +49,10 @@ const triggerAlarm = async () => {
         date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
       }),
       mongo.alarm.updateOne(
-        { _id: alarm._id },
+        {
+          'alarmTime.hour': { $lte: now.getHours() },
+          'alarmTime.minute': { $lte: now.getMinutes() }
+        },
         { $set: { enable: false } }
       )
     ])
