@@ -40,5 +40,9 @@ exports = module.exports = {
   help: {
     label: '帮助手册。就是你看到的这个。',
     handler: service.help
+  },
+  start: {
+    label: '兼容 /help。',
+    handler: service.help
   }
 };

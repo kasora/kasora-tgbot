@@ -8,7 +8,7 @@ const bot = require('./bot');
 const config = require('./config');
 const mongo = require('./mongo');
 
-const getAlarm = async () => {
+const getAlarms = async () => {
   let day = checkDay();
   let now = new Date();
 
@@ -20,42 +20,49 @@ const getAlarm = async () => {
     }
   ).toArray();
 
-  let alarms = enableAlarms.filter((alarm) => {
-    let flag = true;
-    alarm.check.forEach(check => {
-      if(day[check.time] !== check.mode) flag = false;
-    });
-    return flag;
+  let alarms = {};
+
+  enableAlarms.forEach(alarm => {
+    let key = `${alarm.from.id}_${alarm.chat.id}`;
+    if (alarms[key]) {
+      if (alarm.point > alarms[key].point) {
+        alarms[key] = alarm;
+      }
+    } else {
+      alarms[key] = alarm;
+    }
   })
-  alarms.sort((a, b) => b.point - a.point)
-  if (alarms.length) {
-    return alarms[0];
-  }
-  return;
+  alarms = Object.keys(alarms).map(key => alarms[key]);
+  return alarms;
 }
-exports.getAlarm = getAlarm;
+exports.getAlarms = getAlarms;
 
 const triggerAlarm = async () => {
-  let alarm = await getAlarm();
+  let alarms = await getAlarms();
   let now = new Date();
-  if (alarm) {
-    let message = '```\n' + `@${alarm.from.username}\n` + alarm.message + '```\n';
-    let sentMessage = await bot.sendMessage(alarm.chat.id, message, {
-      parse_mode: 'Markdown',
-    });
-    await Promise.all([
-      mongo.message.insertOne(sentMessage),
-      mongo.message.deleteMany({
-        date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
-      }),
-      mongo.alarm.updateMany(
-        {
-          'alarmTime.hour': { $lte: now.getHours() },
-          'alarmTime.minute': { $lte: now.getMinutes() }
-        },
-        { $set: { enable: false } }
-      )
-    ])
+  if (alarms.length) {
+    await Promise.all(
+      alarms.map(alarm => {
+        let message = '```\n' + `@${alarm.from.username}\n` + alarm.message + '```\n';
+        return bot.sendMessage(alarm.chat.id, message, {
+          parse_mode: 'Markdown',
+        }).then(sentMessage => {
+          return Promise.all([
+            mongo.message.insertOne(sentMessage),
+            mongo.message.deleteMany({
+              date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
+            })
+          ])
+        });
+      })
+    )
+    await mongo.alarm.updateMany(
+      {
+        'alarmTime.hour': { $lte: now.getHours() },
+        'alarmTime.minute': { $lte: now.getMinutes() }
+      },
+      { $set: { enable: false } }
+    )
   }
 }
 exports.triggerAlarm = triggerAlarm;

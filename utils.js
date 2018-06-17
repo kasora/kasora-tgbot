@@ -28,6 +28,12 @@ const getLatestMessages = async (chatId) => {
 };
 exports.getLatestMessages = getLatestMessages;
 
+const deleteMessage = async (_messageId) => {
+  await mongo.prepare();
+  await mongo.message.deleteOne({ _id: _messageId });
+}
+exports.deleteMessage = deleteMessage;
+
 const sendMessage = async (msg) => {
   if (msg.response) {
     let sentMessage = await msg.bot.sendMessage(msg.chat.id, '```\n' + msg.response + '```\n', {
