@@ -48,7 +48,7 @@ const triggerAlarm = async () => {
       mongo.message.deleteMany({
         date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
       }),
-      mongo.alarm.updateOne(
+      mongo.alarm.updateMany(
         {
           'alarmTime.hour': { $lte: now.getHours() },
           'alarmTime.minute': { $lte: now.getMinutes() }
