@@ -23,6 +23,12 @@ const getAlarms = async () => {
   let alarms = {};
 
   enableAlarms.forEach(alarm => {
+    let isTrueTime = true;
+    alarm.check.forEach(check => {
+      if (day[check.time] !== check.mode) isTrueTime = false;
+    });
+    if (!isTrueTime) return;
+
     let key = `${alarm.from.id}_${alarm.chat.id}`;
     if (alarms[key]) {
       if (alarm.point > alarms[key].point) {
