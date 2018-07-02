@@ -1,6 +1,7 @@
 exports = module.exports = {};
 
 let mongo = require('./mongo');
+let config = require('./config');
 
 const getCommand = (text) => {
   let command = text.split(' ');
@@ -10,8 +11,8 @@ const getCommand = (text) => {
 }
 exports.getCommand = getCommand;
 
-const verify = (msg) => {
-  if (msg.from.id !== config.userId) {
+const verify = (id) => {
+  if (id !== config.userId) {
     throw new Error('🌚');
   }
 }
@@ -35,7 +36,7 @@ const deleteMessage = async (_messageId) => {
 exports.deleteMessage = deleteMessage;
 
 const sendMessage = async (msg) => {
-  if (msg.response) {
+  if (msg.response || msg.code === 'node') {
     let sentMessage = await msg.bot.sendMessage(msg.chat.id, '```\n' + msg.response + '```\n', {
       parse_mode: 'Markdown',
       reply_to_message_id: msg.message_id

@@ -9,13 +9,14 @@ let alarmUtils = require('./alarm-utils')
 
 exports = module.exports = {};
 
-exports.bash = async function (msg) {
+exports.bash = function (msg) {
   utils.verify(msg.from.id);
-
-  exec(command, (err, stdout, stderr) => {
-    if (err) throw new Error(stderr);
-    return stdout;
-  });
+  return new Promise((resolve, reject) => {
+    exec(msg.command, (err, stdout, stderr) => {
+      if (err) reject(stderr);
+      resolve(stdout);
+    });
+  })
 }
 
 exports.echo = async function (msg) {
