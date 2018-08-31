@@ -47,28 +47,35 @@ const triggerAlarm = async () => {
   let alarms = await getAlarms();
   let now = new Date();
   if (alarms.length) {
-    await Promise.all(
-      alarms.map(alarm => {
+    await Promise.all(alarms.map(async alarm => {
+      try {
         let message = '```\n' + `@${alarm.from.username}\n` + alarm.message + '```\n';
-        return bot.sendMessage(alarm.chat.id, message, {
-          parse_mode: 'Markdown',
-        }).then(sentMessage => {
-          return Promise.all([
-            mongo.message.insertOne(sentMessage),
-            mongo.message.deleteMany({
-              date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
-            })
-          ])
-        });
-      })
-    )
-    await mongo.alarm.updateMany(
-      {
-        'alarmTime.hour': { $lte: now.getHours() },
-        'alarmTime.minute': { $lte: now.getMinutes() }
-      },
-      { $set: { enable: false } }
-    )
+        let sentMessage = await bot.sendMessage(alarm.chat.id, message, { parse_mode: 'Markdown' });
+        await Promise.all([
+          mongo.message.insertOne(sentMessage),
+          mongo.message.deleteMany({
+            date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
+          }),
+          mongo.alarm.updateMany(
+            {
+              'alarmTime.hour': { $lte: now.getHours() },
+              'alarmTime.minute': { $lte: now.getMinutes() }
+            },
+            { $set: { enable: false } }
+          )
+        ]);
+      } catch (err) {
+        if (err.message === 'ETELEGRAM: 400 Bad Request: group chat was upgraded to a supergroup chat') {
+          await mongo.alarm.updateMany(
+            { 'chat.id': alarm.chat.id },
+            { $set: { 'chat.id': err.response.body.parameters.migrate_to_chat_id } }
+          )
+          return await triggerAlarm();
+        } else {
+          throw err;
+        }
+      }
+    }))
   }
 }
 exports.triggerAlarm = triggerAlarm;
@@ -115,13 +122,13 @@ const clearAlarm = async (msg, alarmId) => {
 exports.clearAlarm = clearAlarm;
 
 const clearAllAlarms = async (msg) => {
-  await mongo.alarm.deleteMany({ 'from.id': msg.from.id })
+  await mongo.alarm.deleteMany({ $and: [{ 'from.id': msg.from.id }, { 'chat.id': msg.chat.id }] });
   return 'ok';
 }
 exports.clearAllAlarms = clearAllAlarms;
 
 const listAlarms = async (msg) => {
-  return await mongo.alarm.find({ 'from.id': msg.from.id }).toArray();
+  return await mongo.alarm.find({ $and: [{ 'from.id': msg.from.id }, { 'chat.id': msg.chat.id }] }).toArray();
 }
 exports.listAlarms = listAlarms;
 

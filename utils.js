@@ -41,6 +41,7 @@ const sendMessage = async (msg) => {
       parse_mode: 'Markdown',
       reply_to_message_id: msg.message_id
     });
+    
     await mongo.message.insertOne(sentMessage);
     await mongo.message.deleteMany({
       date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天

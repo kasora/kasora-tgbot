@@ -1,5 +1,7 @@
 'use strict'
 
+process.env["NTBA_FIX_319"] = 1;
+
 let utils = require('./utils');
 let routes = require('./route');
 let alarmUtils = require('./alarm-utils');
@@ -28,6 +30,15 @@ Object.keys(routes).forEach((routeName) => {
   })
 })
 
+bot.on('edited_message_text', (msg) => {
+  bot._textRegexpCallbacks.some(reg => {
+    const result = reg.regexp.exec(msg.text);
+    if (!result) { return false }
+    reg.regexp.lastIndex = 0;
+    reg.callback(msg, result);
+  });
+});
+
 var CronJob1 = require('cron').CronJob;
 new CronJob1('0 * * * * *', async function () {
   await mongo.prepare();
@@ -40,3 +51,5 @@ new CronJob2('0 0 0 * * *', async function () {
   await alarmUtils.refreshAlarm();
   console.log(`${new Date()}\nAll alarm is refreshed.`)
 }, null, true, 'Asia/Shanghai');
+
+console.log('Bot is working...');

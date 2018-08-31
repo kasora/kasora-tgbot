@@ -9,9 +9,9 @@ let alarmUtils = require('./alarm-utils')
 
 exports = module.exports = {};
 
-exports.bash = function (msg) {
+exports.bash = async function (msg) {
   utils.verify(msg.from.id);
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     exec(msg.command, (err, stdout, stderr) => {
       if (err) reject(stderr);
       resolve(stdout);
@@ -28,14 +28,22 @@ exports.id = function (msg) {
 };
 
 exports.node = function (msg) {
-  let result = new vm({ timeout: 1000 }).run(msg.command);
-  return result === undefined ? 'undefined' : result.toString();
+  try {
+    let result = new vm({ timeout: 1000 }).run(msg.command);
+    return result === undefined ? 'undefined' : result.toString();
+  } catch (err) {
+    msg.response = `Error: ${err.message}`;
+  }
 }
 
 exports.shutUp = async function (msg) {
-  let lastMessage = await utils.getLatestMessages(msg.chat.id);
-  await utils.deleteMessage(lastMessage._id);
-  msg.bot.deleteMessage(lastMessage.chat.id, lastMessage.message_id);
+  try {
+    let lastMessage = await utils.getLatestMessages(msg.chat.id);
+    await utils.deleteMessage(lastMessage._id);
+    msg.bot.deleteMessage(lastMessage.chat.id, lastMessage.message_id);
+  } catch (err) {
+    msg.response = `Error: ${err.message}`;
+  }
 }
 
 exports.setAlarm = async function (msg) {
@@ -69,6 +77,13 @@ exports.clearAlarm = async function (msg) {
 
 exports.help = async function (msg) {
   let routes = require('./route');
+  if (msg.command) {
+    return [
+      `path : /${msg.command}`,
+      `label:`,
+      `${routes[msg.command].label}`,
+    ].join('\n')
+  }
   let labels = Object.keys(routes).map(routeName => {
     return [
       `path : /${routeName}`,

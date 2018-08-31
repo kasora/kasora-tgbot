@@ -38,7 +38,7 @@ exports = module.exports = {
     handler: service.clearAlarm
   },
   help: {
-    label: '帮助手册。就是你看到的这个。',
+    label: '帮助手册。就是你看到的这个。也可以使用 /help xxx 显示 xxx 命令的用途',
     handler: service.help
   },
   start: {

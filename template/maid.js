@@ -26,6 +26,19 @@ exports = module.exports = [
     }],
   },
   {
+    label: 'workday afternoon tea',
+    message: '下午茶时间！快乐一下！',
+    alarmTime: {
+      hour: 13,
+      minute: 30,
+    },
+    point: 1,
+    check: [{
+      time: 'today',
+      mode: 'work'
+    }],
+  },
+  {
     label: 'workday work start',
     message: '早安。主人。\n吃过早餐了么？\n请不要忘了今天的打卡。',
     alarmTime: {
