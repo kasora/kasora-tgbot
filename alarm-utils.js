@@ -108,7 +108,17 @@ const setAlarm = async (msg, alarm) => {
   alarm.enable = alarm.alarmTime.hour > now.getHours()
     || (alarm.alarmTime.hour === now.getHours() && alarm.alarmTime.minute >= now.getMinutes())
 
-  await mongo.alarm.insertOne(alarm);
+  let updateRes = await mongo.alarm.updateOne(
+    {
+      label: alarm.label,
+      "from.id": alarm.from.id,
+      "chat.id": alarm.chat.id,
+    },
+    { $set: alarm },
+    { upsert: true }
+  )
+
+  return updateRes.upsertedCount;
 }
 exports.setAlarm = setAlarm;
 

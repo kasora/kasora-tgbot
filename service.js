@@ -48,10 +48,20 @@ exports.shutUp = async function (msg) {
 
 exports.setAlarm = async function (msg) {
   let alarms = template[msg.command];
+  let createCount = 0;
   if (alarms) {
-    await Promise.all(alarms.map(alarm => alarmUtils.setAlarm(msg, alarm)))
+    let alarmResList = await Promise.all(alarms.map(alarm => alarmUtils.setAlarm(msg, alarm)))
+    createCount = alarmResList.filter(alarmRes => alarmRes).length;
+    let repeatCount = alarmResList.length - createCount;
+
+    let opt = [];
+    if (createCount) opt.push(`${createCount}个闹铃已被添加。`);
+    if (repeatCount) opt.push(`${repeatCount}个闹铃已存在，自动忽略。`);
+
+    return opt.join('\n');
+  } else {
+    return '请指定一个闹铃模板。'
   }
-  return 'ok';
 }
 
 exports.listAlarms = async function (msg) {
@@ -79,7 +89,7 @@ exports.help = async function (msg) {
   let routes = require('./route');
   if (msg.command) {
     return [
-      `path : /${msg.command}`,
+      `path: /${msg.command}`,
       `label:`,
       `${routes[msg.command].label}`,
     ].join('\n')
