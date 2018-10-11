@@ -7,6 +7,7 @@ const ObjectId = require('mongodb').ObjectId;
 const bot = require('./bot');
 const config = require('./config');
 const mongo = require('./mongo');
+const utils = require('./utils');
 
 const getAlarms = async () => {
   let day = checkDay();
@@ -49,21 +50,14 @@ const triggerAlarm = async () => {
   if (alarms.length) {
     await Promise.all(alarms.map(async alarm => {
       try {
-        let message = '```\n' + `@${alarm.from.username}\n` + alarm.message + '```\n';
-        let sentMessage = await bot.sendMessage(alarm.chat.id, message, { parse_mode: 'Markdown' });
-        await Promise.all([
-          mongo.message.insertOne(sentMessage),
-          mongo.message.deleteMany({
-            date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
-          }),
-          mongo.alarm.updateMany(
-            {
-              'alarmTime.hour': { $lte: now.getHours() },
-              'alarmTime.minute': { $lte: now.getMinutes() }
-            },
-            { $set: { enable: false } }
-          )
-        ]);
+        await utils.sendMessage(alarm.chat.id, alarm.message, { at: alarm.from.username });
+        await mongo.alarm.updateMany(
+          {
+            'alarmTime.hour': { $lte: now.getHours() },
+            'alarmTime.minute': { $lte: now.getMinutes() }
+          },
+          { $set: { enable: false } }
+        )
       } catch (err) {
         if (err.message === 'ETELEGRAM: 400 Bad Request: group chat was upgraded to a supergroup chat') {
           await mongo.alarm.updateMany(

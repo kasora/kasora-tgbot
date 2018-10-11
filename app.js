@@ -21,7 +21,7 @@ Object.keys(routes).forEach((routeName) => {
 
     console.log(`username: `, msg.from.username);
     console.log(`command : `, msg.text);
-    
+
     try {
       let output = await route.handler(msg);
       msg.response = output;
@@ -29,7 +29,7 @@ Object.keys(routes).forEach((routeName) => {
       msg.response = `Error: ${err.message}`;
       console.error(err);
     }
-    await utils.sendMessage(msg);
+    await utils.sendMessage(msg.chat.id, msg.response, { replyTo: msg.message_id });
   })
 })
 

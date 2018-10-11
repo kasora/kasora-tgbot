@@ -2,6 +2,7 @@ exports = module.exports = {};
 
 let mongo = require('./mongo');
 let config = require('./config');
+let bot = require('./bot');
 
 const getCommand = (text) => {
   let command = text.split(' ');
@@ -35,19 +36,29 @@ const deleteMessage = async (_messageId) => {
 }
 exports.deleteMessage = deleteMessage;
 
-const sendMessage = async (msg) => {
-  let sentMessage;
-  if (msg.response === undefined || msg.response === '') {
-    sentMessage = await msg.bot.sendMessage(msg.chat.id, '```\n' + 'kasora-bot...没有输出...' + '```\n', {
-      parse_mode: 'Markdown',
-      reply_to_message_id: msg.message_id
-    });
-  } else {
-    sentMessage = await msg.bot.sendMessage(msg.chat.id, '```\n' + msg.response + '```\n', {
-      parse_mode: 'Markdown',
-      reply_to_message_id: msg.message_id
-    })
+const sendMessage = async (chatId, response, option = {}) => {
+  if (typeof response === 'string') {
+    let temp = { type: 'text', text: response };
+    response = temp;
   }
+
+  let messageOption = {
+    parse_mode: 'Markdown',
+  };
+  if (option.replyTo) messageOption.reply_to_message_id = option.replyTo;
+
+  let sentMessage;
+  if (response.type === 'sticker') {
+    sentMessage = await bot.sendSticker(chatId, response.sticker);
+  }
+  if (response.type === 'text') {
+    if (response.text === undefined || response.text === '') {
+      response.text = 'kasora-bot...没有输出...'
+    }
+    if (option.at) response.text = `@${option.at}\n${response.text}`;
+    sentMessage = await bot.sendMessage(chatId, '```\n' + response.text + '\n```', messageOption)
+  }
+
   await mongo.message.insertOne(sentMessage);
   await mongo.message.deleteMany({
     date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天

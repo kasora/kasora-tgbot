@@ -1,7 +1,7 @@
 exports = module.exports = [
   {
     label: 'workday sleep',
-    message: '主人。已经11点了。现在还不睡觉的话……',
+    message: { type: 'sticker', sticker: 'CAADBQAD_gADDxXNGWuj_Z6psGN4Ag' },
     alarmTime: {
       hour: 23,
       minute: 0,
