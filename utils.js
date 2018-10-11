@@ -36,17 +36,22 @@ const deleteMessage = async (_messageId) => {
 exports.deleteMessage = deleteMessage;
 
 const sendMessage = async (msg) => {
-  if (msg.response || msg.code === 'node') {
-    let sentMessage = await msg.bot.sendMessage(msg.chat.id, '```\n' + msg.response + '```\n', {
+  let sentMessage;
+  if (msg.response === undefined || msg.response === '') {
+    sentMessage = await msg.bot.sendMessage(msg.chat.id, '```\n' + 'kasora-bot...没有输出...' + '```\n', {
       parse_mode: 'Markdown',
       reply_to_message_id: msg.message_id
     });
-    
-    await mongo.message.insertOne(sentMessage);
-    await mongo.message.deleteMany({
-      date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
+  } else {
+    sentMessage = await msg.bot.sendMessage(msg.chat.id, '```\n' + msg.response + '```\n', {
+      parse_mode: 'Markdown',
+      reply_to_message_id: msg.message_id
     })
   }
+  await mongo.message.insertOne(sentMessage);
+  await mongo.message.deleteMany({
+    date: { $lt: parseInt(Date.now() / 1000) - 60 * 60 * 24 * 2 } // 消息保留两天
+  })
 }
 exports.sendMessage = sendMessage;
 

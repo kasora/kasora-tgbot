@@ -14,11 +14,14 @@ Object.keys(routes).forEach((routeName) => {
   let route = routes[routeName]
   bot.onText(RegExp(`^\/${routeName}`), async (msg) => {
     await mongo.prepare();
+
     msg.code = routeName;
     msg.command = utils.getCommand(msg.text);
     msg.bot = bot;
+
     console.log(`username: `, msg.from.username);
     console.log(`command : `, msg.text);
+    
     try {
       let output = await route.handler(msg);
       msg.response = output;
