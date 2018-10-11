@@ -24,6 +24,7 @@ Object.keys(routes).forEach((routeName) => {
 
     try {
       let output = await route.handler(msg);
+      if (output === undefined) return;
       msg.response = output;
     } catch (err) {
       msg.response = `Error: ${err.message}`;
