@@ -14,9 +14,9 @@ exports = module.exports = [
   },
   {
     label: 'workday lunch',
-    message: '主人，再不点午饭的话，12点可就不能准时摸鱼啦！',
+    message: { type: 'sticker', sticker: 'CAADBQAD8wADDxXNGeYW5EDuT_6aAg' },
     alarmTime: {
-      hour: 11,
+      hour: 12,
       minute: 0,
     },
     point: 1,
@@ -29,7 +29,7 @@ exports = module.exports = [
     label: 'workday afternoon tea',
     message: '下午茶时间！快乐一下！',
     alarmTime: {
-      hour: 13,
+      hour: 14,
       minute: 30,
     },
     point: 1,
@@ -56,7 +56,7 @@ exports = module.exports = [
     message: '今天也辛苦了呢。主人。\n已经到了下班时间了\n不要忘记打卡。',
     alarmTime: {
       hour: 18,
-      minute: 30,
+      minute: 35,
     },
     point: 1,
     check: [{
@@ -68,7 +68,7 @@ exports = module.exports = [
     label: 'holiday lunch',
     message: '主人，就算放假也要记得吃午饭！',
     alarmTime: {
-      hour: 11,
+      hour: 12,
       minute: 0,
     },
     point: 1,
