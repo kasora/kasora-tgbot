@@ -101,7 +101,7 @@ exports = module.exports = [
     message: '明天就要放假啦，今晚准备玩些什么？',
     alarmTime: {
       hour: 18,
-      minute: 30,
+      minute: 35,
     },
     point: 5,
     check: [
