@@ -5,7 +5,8 @@ const vm = require('vm2').VM;
 
 let utils = require('./utils');
 let template = require('./template');
-let alarmUtils = require('./alarm-utils')
+let alarmUtils = require('./alarm-utils');
+let routes = require('./route');
 
 exports = module.exports = {};
 
@@ -41,6 +42,15 @@ exports.shutUp = async function (msg) {
     let lastMessage = await utils.getLatestMessages(msg.chat.id);
     await utils.deleteMessage(lastMessage._id);
     msg.bot.deleteMessage(lastMessage.chat.id, lastMessage.message_id);
+  } catch (err) {
+    msg.response = `Error: ${err.message}`;
+  }
+}
+
+exports.explain = async function (msg) {
+  try {
+    return `null是什么意思？null是什么梗？null是谁？这个梗又是从何而来？为什么一瞬间就有好多人使用这个梗？为什么大家都在null？相信不少同学都很想了解这个梗，下面就让小编来为大家介绍一下null梗的详细内容。null是什么意思？null是什么梗？null是谁？这个梗又是从何而来？为什么一瞬间就有好多人使用这个梗？为什么大家都在null？相信不少同学都很想了解这个梗，下面就让小编来为大家介绍一下null梗的详细内容。
+以上就是null的全部内容，希望能够帮助到大家。`.replace(/null/g, msg.command);
   } catch (err) {
     msg.response = `Error: ${err.message}`;
   }
@@ -86,7 +96,6 @@ exports.clearAlarm = async function (msg) {
 }
 
 exports.help = async function (msg) {
-  let routes = require('./route');
   if (msg.command) {
     return [
       `path: /${msg.command}`,

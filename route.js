@@ -21,6 +21,10 @@ exports = module.exports = {
     label: '让我收回我的上一句发言。',
     handler: service.shutUp
   },
+  explain: {
+    label: '使用通俗易懂的方式解释一种事情。',
+    handler: service.explain
+  },
   setalarm: {
     label: '设定一组闹钟。\n例如 /setalarm maid。\n目前的可选项有 maid ……呃，目前只有这一个',
     handler: service.setAlarm
