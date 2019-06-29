@@ -1,6 +1,6 @@
-let service = require('./service');
-
 exports = module.exports = {};
+
+let service = require('./service');
 
 exports.echo = {
   label: '人类的本质就是个复读机。',
