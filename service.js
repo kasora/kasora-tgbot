@@ -1,5 +1,7 @@
 'use strict';
 
+exports = module.exports = {};
+
 const { exec } = require('child_process');
 const vm = require('vm2').VM;
 
@@ -8,8 +10,6 @@ let template = require('./template');
 let alarmUtils = require('./alarm-utils');
 let routes = require('./route');
 let arknightsMemberData = require('./data/arknights_member.json');
-
-exports = module.exports = {};
 
 exports.bash = async function (msg) {
   utils.verify(msg.from.id);
