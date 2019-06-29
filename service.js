@@ -7,6 +7,7 @@ let utils = require('./utils');
 let template = require('./template');
 let alarmUtils = require('./alarm-utils');
 let routes = require('./route');
+let arknightsMemberData = require('./data/arknights_member.json');
 
 exports = module.exports = {};
 
@@ -93,6 +94,60 @@ exports.clearAlarm = async function (msg) {
     return await alarmUtils.clearAllAlarms(msg);
   }
   return alarmUtils.clearAlarm(msg, msg.command);
+}
+
+exports.getMember = async function (msg) {
+  let tagList = msg.command.split(' ');
+  if (tagList.length > 5) return '公开招募只有 5 个标签啊，朋友'
+
+  let getMap = (tagList) => {
+    let tagMap = [[]];
+    for (let tag of tagList) {
+      let tempMap = Array.from(tagMap);
+      tempMap = tempMap.map(el => Array.from(el));
+      tempMap.forEach(el => el.push(tag));
+      tagMap = tagMap.concat(tempMap);
+    }
+    tagMap.shift()
+    return tagMap;
+  }
+
+  let getMember = (tagList) => {
+    let memberSet = new Set();
+    let minStar = 6;
+    for (let memberInfo of arknightsMemberData) {
+      let flag = true;
+      for (let tag of tagList) {
+        if (!memberInfo.tags.includes(tag)) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag) {
+        if (memberInfo.star < minStar) {
+          minStar = memberInfo.star;
+        }
+        memberSet.add(memberInfo);
+      }
+    }
+    let memberList = Array.from(memberSet);
+    memberList.sort((a, b) => b.star - a.star);
+    return {
+      minStar: minStar,
+      tagList: tagList,
+      memberList: memberList.map(el => el.name),
+    };
+  }
+
+  let tagMap = getMap(tagList);
+  let output = tagMap.map(el => getMember(el));
+  output = output.filter(el => el.minStar > 3 && el.memberList.length !== 0);
+  if (output.length === 0) return `当前的标签没法组合出纯4星+的干员`;
+  output.sort((a, b) => b.minStar - a.minStar);
+  output = output.map(el => `${el.tagList.join(' + ')}: ${el.memberList.join(' / ')}`)
+  output = output.join('\n');
+
+  return output;
 }
 
 exports.help = async function (msg) {

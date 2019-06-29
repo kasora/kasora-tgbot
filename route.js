@@ -41,6 +41,10 @@ exports = module.exports = {
     label: '清空你的闹铃。\n清空所有闹铃格式为 /clearalarm all\n清空指定闹铃为 /clearalarm <闹铃id>',
     handler: service.clearAlarm
   },
+  getmember: {
+    label: '明日方舟工具-查询公开招募标签的最优解，标签之间使用空格区分',
+    handler: service.getMember
+  },
   help: {
     label: '帮助手册。就是你看到的这个。也可以使用 /help xxx 显示 xxx 命令的用途',
     handler: service.help
