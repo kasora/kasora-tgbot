@@ -37,10 +37,11 @@ for (member of opt) {
   infoObj.star = Math.floor(info[3])
   infoObj.status = !member.includes('实装');
   if (!infoObj.status) {
-    infoObj.tags = [];
-    tableInfo.push(infoObj)
+    // infoObj.tags = [];
+    // tableInfo.push(infoObj)
     continue;
   }
+  if (!info[6].split('、').includes('公开招募')) continue;
   infoObj.tags = info[info.length - 1].split('、')
   let sexTag = info[4] === '男' ? '男性干员' : '女性干员';
   infoObj.tags.push(sexTag);
@@ -51,5 +52,5 @@ for (member of opt) {
 }
 
 fs.writeFileSync('./a.txt',
-  //  opt.join('\n'))
+  // opt.join('\n'))
   JSON.stringify(tableInfo, null, 2));
