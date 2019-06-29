@@ -144,7 +144,7 @@ exports.getMember = async function (msg) {
   output = output.filter(el => el.minStar > 3 && el.memberList.length !== 0);
   if (output.length === 0) return `当前的标签没法组合出纯4星+的干员`;
   output.sort((a, b) => b.minStar - a.minStar);
-  output = output.map(el => `${el.tagList.join(' + ')}: ${el.memberList.join(' / ')}`)
+  output = output.map(el => `最低${el.minStar}⭐️ - ${el.tagList.join(' + ')}: ${el.memberList.join(' / ')}`)
   output = output.join('\n');
 
   return output;
