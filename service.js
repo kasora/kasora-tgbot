@@ -135,16 +135,35 @@ exports.getMember = async function (msg) {
     return {
       minStar: minStar,
       tagList: tagList,
-      memberList: memberList.map(el => el.name),
+      percent: memberList.filter(el => el.star >= 4).length / memberList.length,
+      memberList: memberList.map(el => `${el.star}星 ${el.name}`),
     };
   }
 
   let tagMap = getMap(tagList);
-  let output = tagMap.map(el => getMember(el));
-  output = output.filter(el => el.minStar > 3 && el.memberList.length !== 0);
-  if (output.length === 0) return `当前的标签没法组合出纯4星+的干员`;
-  output.sort((a, b) => b.minStar - a.minStar);
-  output = output.map(el => `最低${el.minStar}⭐️ - ${el.tagList.join(' + ')}: ${el.memberList.join(' / ')}`)
+  let memberList = tagMap.map(el => getMember(el));
+  let output = memberList.filter(el => el.minStar > 3 && el.memberList.length !== 0);
+  if (output.length === 0) {
+    memberList.sort((a, b) => {
+      if (b.percent - a.percent === 0) return a.tagList.length - b.tagList.length;
+      return b.percent - a.percent;
+    });
+    if (memberList.length) {
+      memberList = memberList.filter(el => el.percent === memberList[0].percent)
+    }
+    let optStr = `当前的标签没法组合出纯4星+的干员`;
+    if (memberList.length) {
+      optStr += '，但是可以尝试下列组合\n';
+    }
+    let opt = memberList.map(el => `最低${el.minStar}星 - ${el.tagList.join(' + ')}: ${el.memberList.join(' / ')}`)
+    opt = opt.join('\n');
+    return optStr + opt;
+  }
+  output.sort((a, b) => {
+    if (b.minStar - a.minStar === 0) return a.tagList.length - b.tagList.length;
+    return b.minStar - a.minStar
+  });
+  output = output.map(el => `最低${el.minStar}星 - ${el.tagList.join(' + ')}: ${el.memberList.join(' / ')}`)
   output = output.join('\n');
 
   return output;
