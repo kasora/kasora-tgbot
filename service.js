@@ -98,7 +98,7 @@ exports.clearAlarm = async function (msg) {
 
 exports.getMember = async function (msg) {
   let tagList = msg.command.split(' ');
-  if (tagList.length > 5) return '公开招募只有 5 个标签啊，朋友'
+  if (tagList.length > 6) return '标签太多了啊，朋友'
 
   let getMap = (tagList) => {
     let tagMap = [[]];
@@ -132,6 +132,9 @@ exports.getMember = async function (msg) {
     }
     let memberList = Array.from(memberSet);
     memberList.sort((a, b) => b.star - a.star);
+    if (!tagList.includes('高级资深干员')) {
+      memberList = memberList.filter(el => el.star < 6);
+    }
     return {
       minStar: minStar,
       tagList: tagList,
