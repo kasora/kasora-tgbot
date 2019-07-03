@@ -152,7 +152,7 @@ exports.getMember = async function (msg) {
       return b.percent - a.percent;
     });
     if (memberList.length) {
-      memberList = memberList.filter(el => el.percent === memberList[0].percent)
+      memberList = memberList.filter(el => Math.abs(el.percent - memberList[0].percent) < 0.000001)
     }
     let optStr = `当前的标签没法组合出纯4星+的干员`;
     if (memberList.length) {
