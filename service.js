@@ -138,7 +138,7 @@ exports.getMember = async function (msg) {
     return {
       minStar: minStar,
       tagList: tagList,
-      percent: memberList.filter(el => el.star >= 4).length / memberList.length,
+      percent: memberList.length ? memberList.filter(el => el.star >= 4).length / memberList.length : 0,
       memberList: memberList.map(el => `${el.star}星 ${el.name}`),
     };
   }
@@ -168,7 +168,6 @@ exports.getMember = async function (msg) {
   });
   output = output.map(el => `最低${el.minStar}星 - ${el.tagList.join(' + ')}: ${el.memberList.join(' / ')}`)
   output = output.join('\n');
-
   return output;
 }
 
