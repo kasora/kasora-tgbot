@@ -4,8 +4,8 @@
 let jssoup = require('jssoup').default;
 
 let fs = require('fs');
-
-let data = fs.readFileSync('./明日方舟干员.html', { encoding: 'utf8' })
+let agent = require('spueragent');
+let data = agent.get('http://wiki.joyme.com/arknights/%E5%B9%B2%E5%91%98%E6%95%B0%E6%8D%AE%E8%A1%A8');
 
 let soup = new jssoup(data);
 
@@ -42,10 +42,10 @@ for (member of opt) {
     continue;
   }
   if (!info[6].split('、').includes('公开招募')) continue;
-  infoObj.tags = info[info.length - 1].split('、')
+  infoObj.tags = info[info.length - 1].split('、').map(el => el.replace('\r', ''))
   let sexTag = info[4] === '男' ? '男性干员' : '女性干员';
   infoObj.tags.push(sexTag);
-  infoObj.tags.push(info[2] + '干员');
+  infoObj.tags.push((info[2] + '干员').replace('\r', ''));
   if (infoObj.star === 5) infoObj.tags.push('资深干员');
   if (infoObj.star === 6) infoObj.tags.push('高级资深干员');
   tableInfo.push(infoObj)

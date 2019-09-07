@@ -14,5 +14,8 @@
     "mongodb": "^3.0.10",
     "node-telegram-bot-api": "^0.30.0",
     "vm2": "^3.6.0"
+  },
+  "devDependencies": {
+    "jssoup": "^0.0.10"
   }
 }
