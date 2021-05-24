@@ -175,5 +175,7 @@ let checkHand = (handCardList) => {
     }
   }
   pickFive([], 0)
+
+  return value;
 }
 exports.checkHand = checkHand
