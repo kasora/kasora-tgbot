@@ -11,6 +11,7 @@ let startGame = () => {
 }
 exports.startGame = startGame;
 
+// 价值比较
 let getMaxValue = (valueList) => {
   let maxValue = valueList[0];
   for (let value of valueList) {
@@ -22,6 +23,7 @@ let getMaxValue = (valueList) => {
   return maxValue;
 }
 
+// 洗牌
 let shuffling = () => {
   let suitList = [1, 2, 3, 4];
   let numberList = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
@@ -45,6 +47,7 @@ let shuffling = () => {
 }
 exports.shuffling = shuffling;
 
+// 计算给定的5张牌的价值
 let checkValue = (cardList) => {
   let tempCardList = JSON.parse(JSON.stringify(cardList));
   tempCardList.sort((a, b) => a.value - b.value)
@@ -158,6 +161,7 @@ let checkValue = (cardList) => {
 }
 exports.checkValue = checkValue
 
+// 计算手牌及公开牌可形成的最大价值
 let checkHand = (handCardList) => {
   let value = { level: 0, value: 0 };
 
