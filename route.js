@@ -50,7 +50,20 @@ exports.help = {
   label: '帮助手册。就是你看到的这个。也可以使用 /help xxx 显示 xxx 命令的用途',
   handler: service.help
 };
-exports.start = {
-  label: '兼容 /help。',
-  handler: service.help
-};
+exports.poker = {
+  label: '发起一局德州扑克',
+  handler: service.poker,
+}
+exports.joinpoker = {
+  label: '加入本群的德州扑克',
+  handler: service.joinPoker,
+}
+exports.startpoker = {
+  label: '开始一局德州扑克',
+  handler: service.startPoker,
+}
+
+// exports.start = {
+//   label: '兼容 /help。',
+//   handler: service.help
+// };

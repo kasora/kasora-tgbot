@@ -66,6 +66,49 @@ const sendMessage = async (chatId, response, option = {}) => {
 }
 exports.sendMessage = sendMessage;
 
+let cardToString = (card) => {
+  let suitEnum = [null, '♥', '♦', '♠', '♣'];
+  let numberEnum = [null, null, '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'k', 'A'];
+
+  return suitEnum[card.suit] + numberEnum[card.value];
+}
+exports.cardToString = cardToString;
+
+const sendUserKeyboard = async (gameInfo) => {
+  let playerInfo = gameInfo.playerList.find(el => el.index === gameInfo.nowIndex);
+
+  let keyboardList = [];
+  if (playerInfo.coin >= gameInfo.nowCoin) keyboardList.push({ text: 'check' })
+  if (playerInfo.coin > gameInfo.nowCoin) keyboardList.push({ text: 'raise' })
+  keyboardList.push({ text: 'fold' })
+  keyboardList.push({ text: 'all in' })
+
+  await bot.sendMessage(
+    playerInfo.userId,
+    [
+      `轮到你了`,
+      playerInfo.cardList.length ? '你的手牌: ' + playerInfo.cardList.map(cardToString).join(', ') : null,
+      gameInfo.publicCardList.length ? '当前公牌: ' + gameInfo.publicCardList.map(cardToString).join(', ') : null,
+      `当前奖池: ${gameInfo.coinPool.reduce((a, b) => a + b, 0)}`,
+      `你已下注: ${gameInfo.coinPool[playerInfo.index]}`,
+      `你的筹码: ${playerInfo.coin}`,
+    ].filter(el => el).join('\n'),
+    {
+      reply_markup: {
+        keyboard: [keyboardList],
+        one_time_keyboard: true,
+        resize_keyboard: true,
+      },
+      parse_mode: 'HTML',
+    }
+  );
+
+  return new Promise((resolve, reject) => {
+    gameInfo.gameContinue = resolve;
+  });
+}
+exports.sendUserKeyboard = sendUserKeyboard;
+
 const alarmToString = (alarm) => {
   if (alarm.alarmTime.minute < 10 && alarm.alarmTime.minute.length < 2) {
     alarm.alarmTime.minute = '0' + alarm.alarmTime.minute;

@@ -10,6 +10,8 @@ let template = require('./template');
 let alarmUtils = require('./alarm-utils');
 let routes = require('./route');
 let arknightsMemberData = require('./data/arknights_member.json');
+let pokerUtils = require('./poker')
+let cardGroup = {};
 
 exports.bash = async function (msg) {
   utils.verify(msg.from.id);
@@ -50,8 +52,7 @@ exports.shutUp = async function (msg) {
 
 exports.explain = async function (msg) {
   try {
-    return `null是什么意思？null是什么梗？null是谁？这个梗又是从何而来？为什么一瞬间就有好多人使用这个梗？为什么大家都在null？相信不少同学都很想了解这个梗，下面就让小编来为大家介绍一下null梗的详细内容。null是什么意思？null是什么梗？null是谁？这个梗又是从何而来？为什么一瞬间就有好多人使用这个梗？为什么大家都在null？相信不少同学都很想了解这个梗，下面就让小编来为大家介绍一下null梗的详细内容。
-以上就是null的全部内容，希望能够帮助到大家。`.replace(/null/g, msg.command);
+    return `null是什么意思？null是什么梗？null是谁？这个梗又是从何而来？为什么一瞬间就有好多人使用这个梗？为什么大家都在null？相信不少同学都很想了解这个梗，下面就让小编来为大家介绍一下null梗的详细内容。null是什么意思？null是什么梗？null是谁？这个梗又是从何而来？为什么一瞬间就有好多人使用这个梗？为什么大家都在null？相信不少同学都很想了解这个梗，下面就让小编来为大家介绍一下null梗的详细内容。\n以上就是null的全部内容，希望能够帮助到大家。`.replace(/null/g, msg.command);
   } catch (err) {
     msg.response = `Error: ${err.message}`;
   }
@@ -169,6 +170,31 @@ exports.getMember = async function (msg) {
   output = output.map(el => `最低${el.minStar}星 - ${el.tagList.join(' + ')}: ${el.memberList.join(' / ')}`)
   output = output.join('\n');
   return output;
+}
+
+exports.poker = async function (msg) {
+  cardGroup[msg.chat.id] = {
+    chatId: msg.chat.id,
+    isStart: false,
+    playerList: []
+  };
+
+  return `请发送 /joinpoker 加入牌局`
+}
+
+exports.joinPoker = async function (msg) {
+  if (cardGroup[msg.chat.id].isStart) return '牌局已经开始'
+  cardGroup[msg.chat.id].playerList.push({ userId: msg.from.id, coin: 40000, userName: msg.from.username });
+
+  return `您已加入牌局`;
+}
+
+exports.startPoker = async function (msg) {
+  if (!cardGroup[msg.chat.id]) return '请先输入 /poker 申请一场牌局'
+  cardGroup[msg.chat.id].isStart = true;
+  await pokerUtils.startGame(msg.chat.id, cardGroup[msg.chat.id]);
+
+  return '牌局开始';
 }
 
 exports.help = async function (msg) {
