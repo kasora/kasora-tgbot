@@ -63,6 +63,26 @@ exports.startpoker = {
   handler: service.startPoker,
 }
 
+exports.gameqe = {
+  label: '发起一局量化宽松',
+  handler: service.boardGameQE,
+}
+
+exports.endgameqe = {
+  label: '结束本群的量化宽松',
+  handler: service.endGameQE,
+}
+
+exports.startgameqe = {
+  label: '开始一局量化宽松',
+  handler: service.startGameQE,
+}
+
+exports.joingameqe = {
+  label: '加入本群的量化宽松',
+  handler: service.joinGameQE,
+}
+
 // exports.start = {
 //   label: '兼容 /help。',
 //   handler: service.help

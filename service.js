@@ -11,7 +11,10 @@ let alarmUtils = require('./alarm-utils');
 let routes = require('./route');
 let arknightsMemberData = require('./data/arknights_member.json');
 let pokerUtils = require('./poker')
+let gameQEUtils = require('./game-qe')
+let config = require('./config');
 let cardGroup = {};
+let qeGroup = {};
 
 exports.bash = async function (msg) {
   utils.verify(msg.from.id);
@@ -195,6 +198,40 @@ exports.startPoker = async function (msg) {
   await pokerUtils.startGame(msg.chat.id, cardGroup[msg.chat.id]);
 
   return '牌局开始';
+}
+
+exports.boardGameQE = async function (msg) {
+  qeGroup[msg.chat.id] = {
+    chatId: msg.chat.id,
+    isStart: false,
+    playerList: []
+  };
+
+  return `请发送 /joingameqe 加入游戏`
+}
+
+exports.joinGameQE = async function (msg) {
+  if (qeGroup[msg.chat.id].isStart) return '游戏已经开始'
+  if (qeGroup[msg.chat.id].playerList.find(el => el.userId === msg.from.id) && msg.from.id != config.userId) return '您已在游戏中'
+  qeGroup[msg.chat.id].playerList.push({ userId: msg.from.id, userName: msg.from.username });
+
+  return `您已加入游戏`;
+}
+
+exports.startGameQE = async function (msg) {
+  if (!qeGroup[msg.chat.id]) return '请先输入 /gameqe 申请一场游戏'
+  qeGroup[msg.chat.id].isStart = true;
+  await gameQEUtils.startGame(msg.chat.id, qeGroup[msg.chat.id]);
+
+  return;
+}
+
+exports.endGameQE = async function (msg) {
+  if (!qeGroup[msg.chat.id]) return '请先输入 /gameqe 申请一场游戏'
+  qeGroup[msg.chat.id].isStart = false;
+  gameQEUtils.endGame(msg.chat.id);
+
+  return '游戏结束';
 }
 
 exports.help = async function (msg) {
